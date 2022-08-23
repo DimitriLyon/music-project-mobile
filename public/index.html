@@ -46,7 +46,7 @@
         <p>Adrian Avendano Nevarez </p>
         <p>Thomas Sosa </p>
         <p>Dr. David Novick </p>
-        <button id="StopBtn"  class="button"  >STOP</button>
+        <button id="StopBtn"  class="button" onclick="stopMusic()" >STOP</button>
         <button id="StartBtn" class="button" onclick="startCtx(),GPS(), createCtx() ">START</button>
         <!--<button class="button2" onclick="">START ! (you may need to press this twice for the GPS to work)</button>-->
         </div>
@@ -204,6 +204,13 @@ then ctxConnected turns true and prevents more audio
 contexts from being initialized.*/
 var ctxConnected = false;
 
+    
+/*Will be set to true by the startCtx
+set to false by stopMusic
+Controls if the volumes is
+*/
+var playingMusic = false;
+
 const socket = io();//connect to the server with the associated port, url + domain
 
 const limitOfUsers = 10;//limit amount of people that each zone can take.
@@ -226,6 +233,7 @@ const isPlaying = (audElem) => {
 };
 
 function startCtx(){
+    playingMusic = true;
     if(ctxConnected){
         console.log("audio contexts already initialized");
     }
@@ -406,7 +414,7 @@ socket.on('newPos', function(data){
     data[0].zones[9] =  parseInt(document.getElementById('zone10Users').value);*/
 
     console.log(data[0].timer);
-
+    if(playingMusic) {
     if(data[0].zones[0]>0 & data[0].zones[0] <= limitOfUsers ){ //if more then 0 people inside zone, play audio, but no more then limitOfUsers
         
         biQLow1.frequency.value = 20*(2**(1/(limitOfUsers/10)*(data[0].zones[0])));
@@ -496,6 +504,7 @@ socket.on('newPos', function(data){
         audio10.play();
     }
     else if (data[0].zones[9]<=0){audio10.volume = 0;}
+    }
 });
 
 
@@ -513,6 +522,20 @@ async function showLocation(position) {
 
 }
 
+function stopMusic() {
+    playingMusic = false;
+    audio1.volume = 0;
+    audio2.volume = 0;
+    audio3.volume = 0;
+    audio4.volume = 0;
+    audio5.volume = 0;
+    audio6.volume = 0;
+    audio7.volume = 0;
+    audio8.volume = 0;
+    audio9.volume = 0;
+    audio10.volume = 0;
+}
+    
 //Error handler
 function errorHandler(error) {
     
